@@ -1,0 +1,130 @@
+{
+  "configVersion": 2,
+  "bowPower": {
+    "too_many_bows:aethers_call": 2.0,
+    "too_many_bows:ancient_sage_bow": 8.0,
+    "too_many_bows:arc_heavens": 2.0,
+    "too_many_bows:arcane_bow": 6.0,
+    "too_many_bows:astral_bound": 7.0,
+    "too_many_bows:auroras_grace": 7.0,
+    "too_many_bows:burnt_relic": 2.0,
+    "too_many_bows:crimson_nexus": 2.0,
+    "too_many_bows:cyroheart_bow": 3.0,
+    "too_many_bows:dark_bow": 20.0,
+    "too_many_bows:demons_grasp": 2.0,
+    "too_many_bows:dragons_breath": 5.0,
+    "too_many_bows:dusk_reaper": 8.0,
+    "too_many_bows:emerald_sage_bow": 2.0,
+    "too_many_bows:ethereal_hunter": 9.0,
+    "too_many_bows:flame_bow": 4.0,
+    "too_many_bows:frostbite": 2.0,
+    "too_many_bows:hunter_bow": 2.0,
+    "too_many_bows:ironclad_bow": 8.0,
+    "too_many_bows:necro_flame_bow": 2.0,
+    "too_many_bows:radiance": 9.0,
+    "too_many_bows:scatter_bow": 1.0,
+    "too_many_bows:sentinels_wrath": 8.0,
+    "too_many_bows:shulker_blast": 10.0,
+    "too_many_bows:solar_bow": 6.0,
+    "too_many_bows:spectral_whisper": 7.0,
+    "too_many_bows:tidal_bow": 2.0,
+    "too_many_bows:torchbearer": 5.0,
+    "too_many_bows:twin_shadows": 5.0,
+    "too_many_bows:verdant_vigor": 8.0,
+    "too_many_bows:verdant_viper": 2.0,
+    "too_many_bows:vitality_weaver": 8.0,
+    "too_many_bows:webstring": 5.0,
+    "too_many_bows:wind_bow": 3.0
+  },
+  "easyLootEnabled": true,
+  "easyLootDropChance": 0.5,
+  "mediumLootEnabled": true,
+  "mediumLootDropChance": 0.4,
+  "hardLootEnabled": true,
+  "hardLootDropChance": 0.3,
+  "endgameLootEnabled": true,
+  "endgameLootDropChance": 0.2,
+  "accessoryLootEnabled": true,
+  "accessoryLootDropChance": 0.12,
+  "emeraldSageXpAmount": 10,
+  "emeraldSageCrimsonNexusBlacklist": [
+    "minecraft:armor_stand",
+    "minecraft:wandering_trader",
+    "dummmmmmy:target_dummy"
+  ],
+  "easyLootTables": [
+    "minecraft:chests/simple_dungeon",
+    "minecraft:chests/abandoned_mineshaft"
+  ],
+  "mediumLootTables": [
+    "minecraft:chests/jungle_temple",
+    "minecraft:chests/pillager_outpost",
+    "minecraft:chests/abandoned_mineshaft",
+    "minecraft:chests/simple_dungeon"
+  ],
+  "hardLootTables": [
+    "minecraft:chests/stronghold_corridor",
+    "minecraft:chests/nether_bridge",
+    "minecraft:chests/bastion_treasure"
+  ],
+  "endgameLootTables": [
+    "minecraft:chests/end_city_treasure",
+    "minecraft:chests/nether_bridge",
+    "minecraft:chests/bastion_treasure"
+  ],
+  "accessoryLootTables": [
+    "minecraft:chests/simple_dungeon",
+    "minecraft:chests/abandoned_mineshaft",
+    "minecraft:chests/pillager_outpost",
+    "minecraft:chests/jungle_temple",
+    "minecraft:chests/stronghold_corridor",
+    "minecraft:chests/woodland_mansion",
+    "minecraft:chests/ancient_city",
+    "minecraft:chests/bastion_treasure",
+    "minecraft:chests/end_city_treasure"
+  ],
+  "easyLootItems": [
+    "too_many_bows:ancient_sage_bow",
+    "too_many_bows:aethers_call",
+    "too_many_bows:burnt_relic",
+    "too_many_bows:power_crystal",
+    "too_many_bows:emerald_sage_bow",
+    "too_many_bows:torchbearer",
+    "too_many_bows:demons_grasp"
+  ],
+  "mediumLootItems": [
+    "too_many_bows:cyroheart_bow",
+    "too_many_bows:power_crystal",
+    "too_many_bows:torchbearer",
+    "too_many_bows:emerald_sage_bow",
+    "too_many_bows:demons_grasp"
+  ],
+  "hardLootItems": [
+    "too_many_bows:sentinels_wrath",
+    "too_many_bows:cursed_stone",
+    "too_many_bows:solar_bow",
+    "too_many_bows:arc_heavens",
+    "too_many_bows:scatter_bow",
+    "too_many_bows:vitality_weaver",
+    "too_many_bows:spectral_whisper",
+    "too_many_bows:webstring"
+  ],
+  "endgameLootItems": [
+    "too_many_bows:flame_bow",
+    "too_many_bows:dark_bow",
+    "too_many_bows:arcane_bow",
+    "too_many_bows:dragons_breath",
+    "too_many_bows:wind_bow",
+    "too_many_bows:cyroheart_bow",
+    "too_many_bows:shulker_blast",
+    "too_many_bows:astral_bound",
+    "too_many_bows:auroras_grace"
+  ],
+  "accessoryLootItems": [
+    "too_many_bows:wind_glove",
+    "too_many_bows:sharpshot_ring",
+    "too_many_bows:stormbound_signet",
+    "too_many_bows:fletchers_talisman",
+    "too_many_bows:dead_eyes_pendant"
+  ]
+}

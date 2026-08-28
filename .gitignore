@@ -1,0 +1,45 @@
+﻿# =====================================================================
+#  Create SMP - que se sube al repo
+#
+#  Regla: se ignora TODO por defecto y solo se permite lo que se lista
+#  abajo. Asi es imposible subir por accidente el mundo, los logs, los
+#  datos de los jugadores o una clave.
+# =====================================================================
+
+# --- 1) por defecto, nada ---
+/*
+
+# --- 2) lo unico que si va al repo ---
+!/.gitignore
+!/README.md
+!/modpack/
+!/install/
+!/config/
+!/server.properties.example
+!/start.bat
+
+# --- 3) excepciones dentro de config/ : datos personales y claves ---
+
+# contrasena generada del panel web de Resourceful Config
+config/resourceful-config-web.json
+
+# nombres y UUID reales de los jugadores
+config/skinrestorer/mojang_profile_cache.json
+
+# contiene la direccion del tunel de playit (va la .example en su lugar)
+config/voicechat/voicechat-server.properties
+
+# copias de seguridad y bloqueos
+config/**/*.bak
+config/**/*.lock
+config/**/*.old
+
+# --- 4) por si acaso, en cualquier sitio ---
+*.jar
+*.zip
+*.log
+*.log.gz
+*.mca
+*.dat
+*.dat_old
+session.lock

@@ -1,0 +1,46 @@
+{
+  "main": {
+    "graves": true,
+    "respectKeepInventory": false,
+    "disableInPvP": false,
+    "graveCoordinates": true,
+    "retrievalType": "BOTH",
+    "mergeOrder": "GRAVE",
+    "dropType": "EQUIP",
+    "sneakSwapsDropType": true
+  },
+  "experience": {
+    "expStorageType": "ALL",
+    "percentage": 100,
+    "percentageType": "POINTS",
+    "cap": -1,
+    "capType": "LEVELS"
+  },
+  "spawning": {
+    "sinkInAir": true,
+    "sinkInWater": true,
+    "sinkInLava": false,
+    "sinkThroughBlocks": true,
+    "replaceBlocks": true,
+    "giveDeathCompass": false,
+    "restrictedDimensions": []
+  },
+  "decay": {
+    "decayEnabled": true,
+    "decayModifier": 50,
+    "decayBreaksItems": false,
+    "decayRobbing": "FRESH",
+    "freshGraveDecayChance": 5,
+    "oldGraveDecayChance": 12,
+    "weatheredGraveDecayChance": 16,
+    "minStageTimeSeconds": 30,
+    "maxStageTimeSeconds": 300
+  },
+  "server": {
+    "graveRobbing": false,
+    "storedGravesAmount": 15,
+    "destructiveDeleteCommand": false,
+    "OPOverrideLevel": 4,
+    "clientOptions": []
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "towers": {
+    "spacing": 10,
+    "separation": 3,
+    "frequency": 1.0,
+    "salt": 205745294
+  },
+  "other": {
+    "spacing": 7,
+    "separation": 2,
+    "salt": 30084234
+  },
+  "towns": {
+    "spacing": 10,
+    "separation": 3,
+    "salt": 10587309
+  }
+}

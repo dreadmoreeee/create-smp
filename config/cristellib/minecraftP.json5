@@ -1,0 +1,90 @@
+{
+  "igloos": {
+    "spacing": 6,
+    "separation": 2,
+    "salt": 14357618
+  },
+  "desert_pyramids": {
+    "spacing": 6,
+    "separation": 2,
+    "salt": 14357617
+  },
+  "end_cities": {
+    "spacing": 6,
+    "separation": 2,
+    "salt": 10387313
+  },
+  "ocean_ruins": {
+    "spacing": 6,
+    "separation": 2,
+    "salt": 14357621
+  },
+  "shipwrecks": {
+    "spacing": 6,
+    "separation": 2,
+    "salt": 165745295
+  },
+  "woodland_mansions": {
+    "spacing": 9,
+    "separation": 3,
+    "salt": 10387319
+  },
+  "ancient_cities": {
+    "spacing": 6,
+    "separation": 2,
+    "salt": 20083232
+  },
+  "buried_treasures": {
+    "spacing": 1,
+    "separation": 0,
+    "frequency": 0.01,
+    "salt": 0
+  },
+  "villages": {
+    "spacing": 6,
+    "separation": 2,
+    "salt": 10387312
+  },
+  "nether_complexes": {
+    "spacing": 6,
+    "separation": 2,
+    "salt": 30084232
+  },
+  "ocean_monuments": {
+    "spacing": 6,
+    "separation": 2,
+    "salt": 10387313
+  },
+  "jungle_temples": {
+    "spacing": 6,
+    "separation": 2,
+    "salt": 14357619
+  },
+  "nether_fossils": {
+    "spacing": 2,
+    "separation": 1,
+    "salt": 14357921
+  },
+  "mineshafts": {
+    "spacing": 1,
+    "separation": 0,
+    "frequency": 0.004,
+    "salt": 0
+  },
+  "pillager_outposts": {
+    "spacing": 8,
+    "separation": 3,
+    "frequency": 0.2,
+    "salt": 165745296
+  },
+  "swamp_huts": {
+    "spacing": 8,
+    "separation": 3,
+    "salt": 14357620
+  },
+  "ruined_portals": {
+    "spacing": 10,
+    "separation": 3,
+    "salt": 34222645
+  }
+}
