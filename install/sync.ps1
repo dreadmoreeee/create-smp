@@ -235,19 +235,39 @@ if (Test-Path $bakDir) {
 # Solo bloquea si el juego abierto usa ESTA carpeta (si no, los .jar estarian
 # bloqueados por Windows y las descargas fallarian a medias).
 if (-not $Force) {
-    $raiz  = (Resolve-Path $MinecraftDir).Path.TrimEnd('\')
-    $procs = @(Get-CimInstance Win32_Process -Filter "Name='javaw.exe'" -EA SilentlyContinue)
-    $chocan = @($procs | Where-Object {
-        ("$($_.CommandLine) $($_.ExecutablePath)") -like "*$raiz*"
-    })
-    if ($chocan.Count -gt 0) {
-        Bad "Minecraft esta abierto usando esta misma carpeta."
-        Say "  Cierralo por completo (incluido el launcher) y vuelve a ejecutar esto."
-        Say "  Si estas seguro de que no, ejecuta el .bat otra vez anadiendo:  -Force"
+    # Mirar procesos javaw no sirve: TLauncher ES un proceso javaw y su linea
+    # de comandos lleva la ruta de .minecraft, asi que con el launcher abierto
+    # (lo normal) saltaba la alarma aunque el juego estuviera cerrado.
+    #
+    # Lo que de verdad importa es si los .jar estan en uso. Si Minecraft esta
+    # corriendo con esta carpeta, tiene TODOS los mods abiertos y no se pueden
+    # abrir en exclusiva. El launcher no bloquea ninguno.
+    $muestra  = @(Get-ChildItem $ModsDir -Filter *.jar -File -EA SilentlyContinue | Select-Object -First 8)
+    $bloqueados = New-Object System.Collections.ArrayList
+    foreach ($j in $muestra) {
+        try {
+            $fs = [IO.File]::Open($j.FullName, 'Open', 'ReadWrite', 'None')
+            $fs.Dispose()
+        } catch {
+            [void]$bloqueados.Add($j.Name)
+        }
+    }
+    # Se exige que esten bloqueados TODOS los probados: que el antivirus pille
+    # uno suelto en mitad de un analisis no es motivo para abortar.
+    if ($muestra.Count -ge 2 -and $bloqueados.Count -eq $muestra.Count) {
+        Bad "Minecraft esta abierto y tiene los mods en uso."
+        Say "  Bloqueado, por ejemplo: $($bloqueados[0])"
+        Say ""
+        Say "  Cierra el JUEGO y vuelve a ejecutar esto. El launcher puede"
+        Say "  quedarse abierto, no molesta."
+        Say ""
+        Say "  Si estas seguro de que esta cerrado, arrastra el .bat a una"
+        Say "  ventana de consola y anade  -Force  al final, o ejecuta:"
+        Say "     `"$PSScriptRoot\ACTUALIZAR.bat`" -Force"
         Fin 1
     }
-    if ($procs.Count -gt 0) {
-        Warn "hay un Minecraft abierto, pero de otra carpeta. Continuo."
+    if ($bloqueados.Count -gt 0) {
+        Warn "$($bloqueados.Count) de $($muestra.Count) .jar estaban en uso momentaneamente. Continuo."
     }
 }
 
