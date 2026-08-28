@@ -5,7 +5,7 @@
     "loader":  "fabric",
     "loader_version_min":  "0.17.2",
     "generated":  "2026-08-28",
-    "mod_count":  119,
+    "mod_count":  120,
     "mods":  [
                  {
                      "file":  "alexsmobs-2.1.7-fabric+1.20.1.jar",
@@ -132,6 +132,15 @@
                      "sha512":  "ca96f56dba50ea4827ec7a15bc590ccb29aba01896550d3cb398bed18acdf469dd351cdc9312e4743f54955b3162e744c58d76c88eb79b1e5e5b4570f5b33c64",
                      "size":  443033,
                      "url":  "https://cdn.modrinth.com/data/joEfVgkn/versions/Mkla4B3q/carryon-fabric-1.20.1-2.1.2.7.jar"
+                 },
+                 {
+                     "file":  "ChestLocker-2.0.0.jar",
+                     "project_id":  "oJS1ZjRd",
+                     "version_id":  "wI8QKFBs",
+                     "version":  "2.0.0",
+                     "sha512":  "91cafa7a223394e87ae0bee2a10c8bebdeb3e037a2218ad4dd2d0441ccbc9f77d825da37fcb62e543b939d70cf45639832fd309d1593fd73a16d818f80fe4999",
+                     "size":  45826,
+                     "url":  "https://cdn.modrinth.com/data/oJS1ZjRd/versions/wI8QKFBs/ChestLocker-2.0.0.jar"
                  },
                  {
                      "file":  "cloth-config-11.1.136-fabric.jar",
