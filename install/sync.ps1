@@ -310,6 +310,11 @@ if ($null -eq $json) {
     Fin 1
 }
 
+# Quitar el BOM si viene. Al leer el archivo en local Get-Content lo elimina
+# solo, pero bajandolo por HTTP llega como U+FEFF al principio del texto y
+# ConvertFrom-Json falla con "Invalid JSON primitive".
+$json = $json.TrimStart([char]0xFEFF, [char]0xFFFE).Trim()
+
 $pack = $json | ConvertFrom-Json
 $requeridos = @{}
 foreach ($m in $pack.mods) { $requeridos[$m.file] = $m }

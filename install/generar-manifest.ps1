@@ -161,8 +161,12 @@ if (-not (Test-Path $Salida)) { [void](New-Item -ItemType Directory -Path $Salid
 $cli = Build-Manifest $ClientMods 'Create SMP - Cliente'  'Mods que debe tener cada jugador'
 $srv = Build-Manifest $ServerMods 'Create SMP - Servidor' 'Mods instalados en el servidor'
 
-$cli | ConvertTo-Json -Depth 6 | Set-Content (Join-Path $Salida 'modpack.json')     -Encoding UTF8
-$srv | ConvertTo-Json -Depth 6 | Set-Content (Join-Path $Salida 'server-mods.json') -Encoding UTF8
+# UTF-8 SIN BOM. Set-Content -Encoding UTF8 en PowerShell 5.1 escribe el BOM,
+# y aunque en local Get-Content lo quita solo, al bajar el archivo por HTTP
+# llega como U+FEFF y ConvertFrom-Json falla con "Invalid JSON primitive".
+$sinBom = New-Object System.Text.UTF8Encoding($false)
+[IO.File]::WriteAllText((Join-Path $Salida 'modpack.json'),     ($cli | ConvertTo-Json -Depth 6), $sinBom)
+[IO.File]::WriteAllText((Join-Path $Salida 'server-mods.json'), ($srv | ConvertTo-Json -Depth 6), $sinBom)
 
 Write-Host ""
 Write-Host "Listo:" -ForegroundColor Green
