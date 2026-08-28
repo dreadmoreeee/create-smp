@@ -1,9 +1,9 @@
-{
+﻿{
  "name": "Create SMP - Servidor",
  "description": "Mods instalados en el servidor",
  "minecraft": "1.20.1",
  "loader": "fabric",
- "loader_version_min": "0.19.3",
+ "loader_version_min":  "0.17.2",
  "generated": "2026-08-27",
  "mod_count": 107,
  "mods": [

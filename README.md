@@ -18,7 +18,13 @@ software de terceros, y cada actualización es un diff legible.
 
 El script hace todo esto solo:
 
-- comprueba que tengas un perfil de **Fabric 1.20.1** y que el loader sea `0.19.3` o superior;
+- busca tu Minecraft en las rutas habituales (incluidas las de TLauncher) y se queda
+  con la que de verdad tenga **Fabric 1.20.1**;
+- reconoce el perfil por sus librerías, no por el nombre de la carpeta, así que da
+  igual que se llame `Fabric 1.20.1`, `fabric-loader-0.17.2-1.20.1` o lo que ponga
+  TLauncher;
+- comprueba que el loader sea `0.17.2` o superior (que es el mayor que exige un mod
+  del pack, calculado a partir de los propios `.jar`);
 - avisa si tienes perfiles de Forge u OptiFine que puedan confundirte al entrar;
 - descarga la lista de mods más reciente desde GitHub;
 - compara tu carpeta `mods` con esa lista, verificando cada archivo por **hash SHA-512**;

@@ -24,6 +24,40 @@ function Get-Sha512 ($ruta) {
     finally { $fs.Dispose(); $sha.Dispose() }
 }
 
+# El minimo de Fabric Loader no se pone a mano: se saca del propio pack,
+# leyendo el "fabricloader" que declara cada fabric.mod.json y quedandose con
+# el mas alto. Ponerlo a ojo (p.ej. la version que tenga el servidor) rechaza
+# a jugadores cuyo loader vale de sobra.
+function Get-LoaderMinimo ($carpeta) {
+    Add-Type -AssemblyName System.IO.Compression.FileSystem
+    $max = [version]'0.0.0'
+    foreach ($j in Get-ChildItem $carpeta -Filter *.jar -File) {
+        try {
+            $z = [IO.Compression.ZipFile]::OpenRead($j.FullName)
+            $e = @($z.Entries | Where-Object { $_.FullName -eq 'fabric.mod.json' })[0]
+            if ($e) {
+                $sr  = New-Object IO.StreamReader($e.Open())
+                $txt = $sr.ReadToEnd(); $sr.Close()
+                # Hay que parsear el JSON de verdad: muchos jars escriben el
+                # ">=" escapado como >=, y un regex sobre el texto
+                # crudo se comeria el "003" de la secuencia como si fuera la
+                # version.
+                $dep = $null
+                try { $dep = ($txt | ConvertFrom-Json).depends.fabricloader } catch { }
+                if ($dep) {
+                    $m = [regex]::Match([string]$dep, '([0-9]+(\.[0-9]+)*)')
+                    if ($m.Success) {
+                        try { $v = [version]$m.Groups[1].Value } catch { $v = $null }
+                        if ($v -and $v -gt $max) { $max = $v }
+                    }
+                }
+            }
+            $z.Dispose()
+        } catch { }
+    }
+    return $max.ToString()
+}
+
 function Build-Manifest ($carpeta, $nombre, $descripcion) {
     Write-Host ""
     Write-Host "== $nombre ==" -ForegroundColor Cyan
@@ -71,12 +105,15 @@ function Build-Manifest ($carpeta, $nombre, $descripcion) {
         foreach ($s in $sinResolver) { Write-Host "      - $s" -ForegroundColor Yellow }
     }
 
+    $loaderMin = Get-LoaderMinimo $carpeta
+    Write-Host "   Fabric Loader minimo que exige el pack: $loaderMin"
+
     return [ordered]@{
         name              = $nombre
         description       = $descripcion
         minecraft         = '1.20.1'
         loader            = 'fabric'
-        loader_version_min= '0.19.3'
+        loader_version_min= $loaderMin
         generated         = (Get-Date -Format 'yyyy-MM-dd')
         mod_count         = $mods.Count
         mods              = $mods

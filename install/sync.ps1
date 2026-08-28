@@ -24,7 +24,10 @@ $ProgressPreference    = 'SilentlyContinue'
 $ManifestUrl = 'https://raw.githubusercontent.com/dreadmoreeee/create-smp/main/modpack/modpack.json'
 
 $MC_VERSION      = '1.20.1'
-$LOADER_MIN      = '0.19.3'
+# Minimo REAL: es el mayor "fabricloader" que declara algun mod del pack
+# (lo dice generar-manifest.ps1). No poner aqui la version que tenga el
+# servidor: rechazaria a jugadores cuyo loader vale perfectamente.
+$LOADER_MIN      = '0.17.2'
 $BackupDirName   = 'mods-quitados'
 
 # Mods que NO son del pack pero que tampoco hay que tocar.
@@ -63,22 +66,88 @@ function Fin ($code) {
 Title "Create SMP  -  sincronizador de mods  (Minecraft $MC_VERSION Fabric)"
 
 # ------------------------------------------------- 1. Localizar .minecraft
+# Un perfil de Fabric se reconoce por sus LIBRERIAS, no por el nombre de la
+# carpeta: TLauncher, el instalador oficial y CurseForge lo nombran distinto
+# ("Fabric 1.20.1", "fabric-loader-0.17.2-1.20.1", "1.20.1-fabric"...).
+# La libreria net.fabricmc:intermediary:<version> siempre lleva la version
+# del juego, asi que es el marcador fiable.
+function Get-PerfilesFabric ($raiz) {
+    $res = @()
+    $vd = Join-Path $raiz 'versions'
+    if (-not (Test-Path $vd)) { return $res }
+    foreach ($dir in @(Get-ChildItem $vd -Directory -EA SilentlyContinue)) {
+        foreach ($js in @(Get-ChildItem $dir.FullName -Filter *.json -File -EA SilentlyContinue)) {
+            try { $txt = Get-Content $js.FullName -Raw -EA Stop } catch { continue }
+            $m = [regex]::Match($txt, 'net\.fabricmc:fabric-loader:([0-9][0-9\.]*)')
+            if (-not $m.Success) { continue }
+            $esVersion = ($txt -match [regex]::Escape("net.fabricmc:intermediary:$MC_VERSION")) -or
+                         ($txt -match ('"inheritsFrom"\s*:\s*"' + [regex]::Escape($MC_VERSION) + '"')) -or
+                         ($dir.Name -match [regex]::Escape($MC_VERSION))
+            if (-not $esVersion) { continue }
+            $res += [pscustomobject]@{
+                Nombre = $dir.Name
+                Loader = $m.Groups[1].Value.TrimEnd('.')
+            }
+            break
+        }
+    }
+    return $res
+}
+
 if ([string]::IsNullOrWhiteSpace($MinecraftDir)) {
     $candidatos = @(
         (Join-Path $env:APPDATA '.minecraft'),
         (Join-Path $env:APPDATA '.tlauncher\legacy\Minecraft\game'),
+        (Join-Path $env:APPDATA '.tlauncher\Minecraft\game'),
+        (Join-Path $env:USERPROFILE '.minecraft'),
+        (Join-Path $env:USERPROFILE 'AppData\Roaming\.minecraft'),
         (Join-Path $env:USERPROFILE 'curseforge\minecraft\Instances')
-    )
-    foreach ($c in $candidatos) {
-        if (Test-Path (Join-Path $c 'versions')) { $MinecraftDir = $c; break }
-    }
+    ) | Select-Object -Unique
+} else {
+    $candidatos = @($MinecraftDir)
 }
-if ([string]::IsNullOrWhiteSpace($MinecraftDir) -or -not (Test-Path $MinecraftDir)) {
-    Bad "No encontre la carpeta .minecraft."
-    Say  "  Ejecutalo asi, con la ruta correcta entre comillas:"
-    Say  "     powershell -ExecutionPolicy Bypass -File sync.ps1 -MinecraftDir `"C:\ruta\a\.minecraft`""
+
+# Se elige la carpeta que REALMENTE tiene un Fabric de esta version, no la
+# primera que tenga un 'versions' (habia gente con un .minecraft viejo y
+# vacio al lado del bueno de TLauncher).
+$perfiles = @()
+$elegida  = $null
+$informe  = @()
+foreach ($c in $candidatos) {
+    if (-not (Test-Path $c)) { $informe += "$c  ->  no existe"; continue }
+    $p = @(Get-PerfilesFabric $c)
+    if ($p.Count -gt 0) {
+        $elegida = $c; $perfiles = $p
+        $informe += "$c  ->  $($p.Count) perfil(es) de Fabric $MC_VERSION"
+        break
+    }
+    $otras = @(Get-ChildItem (Join-Path $c 'versions') -Directory -EA SilentlyContinue)
+    $informe += "$c  ->  $($otras.Count) version(es), ninguna Fabric $MC_VERSION"
+}
+
+if ($null -eq $elegida) {
+    Bad "No encontre ninguna instalacion con Fabric $MC_VERSION."
+    Say ""
+    Say "  Carpetas revisadas:"
+    foreach ($l in $informe) { Say "     $l" }
+    Say ""
+    foreach ($c in $candidatos) {
+        $otras = @(Get-ChildItem (Join-Path $c 'versions') -Directory -EA SilentlyContinue)
+        if ($otras.Count -gt 0) {
+            Say "  Versiones que hay en $c :"
+            foreach ($o in $otras) { Say "     - $($o.Name)" }
+            Say ""
+            break
+        }
+    }
+    Say "  En TLauncher: pestana de versiones, marca 'Fabric' y elige $MC_VERSION."
+    Say "  O instalalo desde  https://fabricmc.net/use/installer/"
+    Say ""
+    Say "  Si tu Minecraft esta en otra ruta, pasala a mano:"
+    Say "     powershell -ExecutionPolicy Bypass -File sync.ps1 -MinecraftDir `"C:\ruta\a\.minecraft`""
     Fin 1
 }
+$MinecraftDir = $elegida
 Ok ".minecraft: $MinecraftDir"
 
 $ModsDir = Join-Path $MinecraftDir 'mods'
@@ -126,40 +195,22 @@ if (-not $Force) {
 Title "1/5  Comprobando la version de Minecraft"
 
 $versionsDir = Join-Path $MinecraftDir 'versions'
-$perfiles = @()
-if (Test-Path $versionsDir) {
-    $perfiles = @(Get-ChildItem $versionsDir -Directory -ErrorAction SilentlyContinue |
-                  Where-Object { $_.Name -match 'fabric' -and $_.Name -match [regex]::Escape($MC_VERSION) })
-}
-
-if ($perfiles.Count -eq 0) {
-    Bad "No hay ningun perfil de Fabric $MC_VERSION instalado."
-    Say ""
-    Say "  Instala Fabric antes de continuar:"
-    Say "     https://fabricmc.net/use/installer/   ->  version $MC_VERSION"
-    Say "  (o en TLauncher elige la version 'Fabric $MC_VERSION')"
-    Fin 1
-}
 
 $loaderOk = $false
 foreach ($p in $perfiles) {
-    $j = Join-Path $p.FullName "$($p.Name).json"
-    if (-not (Test-Path $j)) { continue }
-    $txt = Get-Content $j -Raw
-    $m = [regex]::Match($txt, 'net\.fabricmc:fabric-loader:([0-9][0-9\.]*)')
-    if (-not $m.Success) { continue }
-    $v = $m.Groups[1].Value
-    $cmp = ([version]$v).CompareTo([version]$LOADER_MIN)
-    if ($cmp -ge 0) {
-        Ok "perfil '$($p.Name)'  ->  Fabric Loader $v"
+    $vale = $false
+    try { $vale = ([version]$p.Loader).CompareTo([version]$LOADER_MIN) -ge 0 } catch { $vale = $false }
+    if ($vale) {
+        Ok "perfil '$($p.Nombre)'  ->  Fabric Loader $($p.Loader)"
         $loaderOk = $true
     } else {
-        Warn "perfil '$($p.Name)' tiene Fabric Loader $v (hace falta $LOADER_MIN o superior)"
+        Warn "perfil '$($p.Nombre)' tiene Fabric Loader $($p.Loader) (hace falta $LOADER_MIN o superior)"
     }
 }
 if (-not $loaderOk) {
     Bad "Ningun perfil llega a Fabric Loader $LOADER_MIN."
-    Say "  Reinstala Fabric $MC_VERSION desde https://fabricmc.net/use/installer/"
+    Say "  En TLauncher, al elegir Fabric $MC_VERSION coge la version de loader mas alta."
+    Say "  O reinstalalo desde  https://fabricmc.net/use/installer/"
     Fin 1
 }
 
