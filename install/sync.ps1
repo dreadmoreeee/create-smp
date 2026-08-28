@@ -21,7 +21,7 @@ $ProgressPreference    = 'SilentlyContinue'
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
 # URL cruda del manifest en GitHub. Si cambias de repo, cambia esto.
-$ManifestUrl = 'https://raw.githubusercontent.com/__USUARIO__/__REPO__/main/modpack/modpack.json'
+$ManifestUrl = 'https://raw.githubusercontent.com/dreadmoreeee/create-smp/main/modpack/modpack.json'
 
 $MC_VERSION      = '1.20.1'
 $LOADER_MIN      = '0.19.3'
