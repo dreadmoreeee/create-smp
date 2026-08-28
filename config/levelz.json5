@@ -100,10 +100,10 @@
 	"breedingXPMultiplier": 3.0,
 	"bottleXPMultiplier": 3.0,
 	"dragonXPMultiplier": 0.75,
-	"fishingXPMultiplier": 2.4,
+	"fishingXPMultiplier": 2.4000000953674316,
 	"furnaceXPMultiplier": 1.5,
 	"oreXPMultiplier": 3.0,
-	"tradingXPMultiplier": 0.9,
+	"tradingXPMultiplier": 0.8999999761581421,
 	"mobXPMultiplier": 3.0,
 	"spawnerMobXP": false,
 	// Highlight locked blocks in red., client only
