@@ -27,6 +27,16 @@ $MC_VERSION      = '1.20.1'
 $LOADER_MIN      = '0.19.3'
 $BackupDirName   = 'mods-quitados'
 
+# Mods que NO son del pack pero que tampoco hay que tocar.
+# TLauncher inyecta solo su mod de skins/capas en la carpeta mods; si se lo
+# quitamos, los jugadores no premium pierden las skins, y ademas TLauncher lo
+# vuelve a poner al arrancar -> el script lo quitaria una y otra vez.
+$Protegidos = @(
+    'tl_skin_cape*',      # TLauncher - skins y capas
+    'tlskincape*',
+    'TLauncher*'
+)
+
 # ---------------------------------------------------------------- UI
 function Say  ($m) { Write-Host $m }
 function Ok   ($m) { Write-Host "  [OK]    $m" -ForegroundColor Green }
@@ -192,12 +202,18 @@ Info "tienes $($locales.Count) .jar instalados"
 $correctos = New-Object System.Collections.ArrayList
 $sobran    = New-Object System.Collections.ArrayList
 $corruptos = New-Object System.Collections.ArrayList
+$respetados= New-Object System.Collections.ArrayList
 
 $i = 0
 foreach ($f in $locales) {
     $i++
     Write-Host ("`r  verificando  $i/$($locales.Count) ...") -NoNewline
-    if (-not $requeridos.ContainsKey($f.Name)) { [void]$sobran.Add($f); continue }
+    if (-not $requeridos.ContainsKey($f.Name)) {
+        $esProtegido = $false
+        foreach ($p in $Protegidos) { if ($f.Name -like $p) { $esProtegido = $true; break } }
+        if ($esProtegido) { [void]$respetados.Add($f.Name) } else { [void]$sobran.Add($f) }
+        continue
+    }
     if ((Get-Sha512 $f.FullName) -eq $requeridos[$f.Name].sha512) { [void]$correctos.Add($f.Name) }
     else { [void]$corruptos.Add($f.Name) }
 }
@@ -209,6 +225,10 @@ Ok      "correctos:  $($correctos.Count)"
 if ($faltan.Count    -gt 0) { Warn "por descargar: $($faltan.Count)" }
 if ($corruptos.Count -gt 0) { Warn "corruptos (se rebajaran): $($corruptos.Count)" }
 if ($sobran.Count    -gt 0) { Warn "sobran (se quitaran): $($sobran.Count)" }
+if ($respetados.Count -gt 0) {
+    Info "no son del pack pero los dejo en su sitio: $($respetados.Count)"
+    foreach ($r in $respetados) { Say "     . $r" }
+}
 
 if ($faltan.Count -eq 0 -and $sobran.Count -eq 0) {
     Ok "Tu carpeta mods ya esta perfecta. No hay nada que hacer."
@@ -274,15 +294,24 @@ if (Test-Path $bobby) {
 }
 
 # ------------------------------------------------- 8. Resumen
-$final = @(Get-ChildItem $ModsDir -Filter *.jar -File -EA SilentlyContinue).Count
+# Lo correcto no es contar archivos (puede haber protegidos de mas), sino
+# comprobar que esta cada uno de los que pide el server.
+$hay      = @{}
+$finalJar = @(Get-ChildItem $ModsDir -Filter *.jar -File -EA SilentlyContinue)
+foreach ($f in $finalJar) { $hay[$f.Name] = $true }
+$ausentes = @($pack.mods | Where-Object { -not $hay.ContainsKey($_.file) })
+
 Title "RESUMEN"
-Say "  mods instalados ahora : $final"
-Say "  mods que pide el server: $($pack.mods.Count)"
+Say "  mods del pack instalados: $($pack.mods.Count - $ausentes.Count) de $($pack.mods.Count)"
+if ($respetados.Count -gt 0) { Say "  ademas, respetados      : $($respetados.Count)  ($($respetados -join ', '))" }
+Say "  .jar totales en la carpeta: $($finalJar.Count)"
 Say ""
-if ($final -eq $pack.mods.Count) {
+if ($ausentes.Count -eq 0) {
     Ok "Todo listo. Abre Minecraft con el perfil FABRIC $MC_VERSION y conectate."
     Fin 0
 } else {
-    Warn "El numero no cuadra. Vuelve a ejecutar el .bat; si sigue igual, avisa."
+    Bad "Faltan $($ausentes.Count) mod(s):"
+    foreach ($a in $ausentes) { Say "     - $($a.file)" }
+    Warn "Vuelve a ejecutar el .bat; si sigue igual, avisa."
     Fin 1
 }

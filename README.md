@@ -24,6 +24,8 @@ El script hace todo esto solo:
 - compara tu carpeta `mods` con esa lista, verificando cada archivo por **hash SHA-512**;
 - **descarga** lo que falte y **vuelve a bajar** lo que esté corrupto o desactualizado;
 - **quita** los mods que sobren (los mueve a `mods-quitados/`, no los borra);
+- **respeta el mod de skins de TLauncher** (`tl_skin_cape*`), que el propio launcher
+  instala solo y que los jugadores no premium necesitan para verse las skins;
 - **limpia la caché `.bobby`** del mapa.
 
 Es seguro ejecutarlo las veces que quieras: si ya está todo bien, no toca nada.
@@ -57,6 +59,18 @@ No hay que repartir ningún zip.
 
 > El generador avisa si algún `.jar` no existe en Modrinth. Esos no se pueden
 > descargar automáticamente y habría que repartirlos aparte.
+
+### Mods que el sincronizador no debe tocar
+
+Algunos mods los instala el propio launcher y no deben quitarse aunque no estén
+en la lista. Están en la variable `$Protegidos` al principio de `install/sync.ps1`:
+
+```powershell
+$Protegidos = @('tl_skin_cape*', 'tlskincape*', 'TLauncher*')
+```
+
+Son patrones de nombre de archivo (comodín `*`). Si aparece otro caso parecido,
+se añade ahí.
 
 ---
 
