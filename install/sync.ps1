@@ -84,6 +84,24 @@ Ok ".minecraft: $MinecraftDir"
 $ModsDir = Join-Path $MinecraftDir 'mods'
 if (-not (Test-Path $ModsDir)) { [void](New-Item -ItemType Directory -Path $ModsDir) }
 
+# Una version anterior de este script se llevaba a mods-quitados el mod de
+# skins de TLauncher. Si sigue ahi, lo devolvemos a su sitio.
+$bakDir = Join-Path $MinecraftDir $BackupDirName
+if (Test-Path $bakDir) {
+    foreach ($f in @(Get-ChildItem $bakDir -Filter *.jar -File -EA SilentlyContinue)) {
+        foreach ($p in $Protegidos) {
+            if ($f.Name -like $p) {
+                $destino = Join-Path $ModsDir $f.Name
+                if (-not (Test-Path $destino)) {
+                    Move-Item $f.FullName $destino -Force
+                    Info "devuelto a mods: $($f.Name)"
+                }
+                break
+            }
+        }
+    }
+}
+
 # ------------------------------------------------- 1b. Minecraft abierto?
 # Solo bloquea si el juego abierto usa ESTA carpeta (si no, los .jar estarian
 # bloqueados por Windows y las descargas fallarian a medias).
