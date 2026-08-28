@@ -1,0 +1,10 @@
+{
+  "criteria": {
+    "entra": {
+      "trigger": "minecraft:tick"
+    }
+  },
+  "rewards": {
+    "function": "niveles:base"
+  }
+}

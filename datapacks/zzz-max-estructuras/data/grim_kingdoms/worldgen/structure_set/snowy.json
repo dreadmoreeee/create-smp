@@ -1,0 +1,75 @@
+{
+  "structures": [
+    {
+      "structure": "grim_kingdoms:blackridge_watch",
+      "weight": 1
+    },
+    {
+      "structure": "grim_kingdoms:decrown_monolith",
+      "weight": 1
+    },
+    {
+      "structure": "grim_kingdoms:frostbloom_bastion",
+      "weight": 1
+    },
+    {
+      "structure": "grim_kingdoms:frozen_onion_fort",
+      "weight": 1
+    },
+    {
+      "structure": "grim_kingdoms:glacierfall_keep",
+      "weight": 1
+    },
+    {
+      "structure": "grim_kingdoms:glimmervault_fortress",
+      "weight": 1
+    },
+    {
+      "structure": "grim_kingdoms:shardspire_castle",
+      "weight": 1
+    },
+    {
+      "structure": "grim_kingdoms:silentgale_citadel",
+      "weight": 1
+    },
+    {
+      "structure": "grim_kingdoms:snowgrave_citadel",
+      "weight": 1
+    },
+    {
+      "structure": "grim_kingdoms:stonyfell_outpost",
+      "weight": 1
+    },
+    {
+      "structure": "grim_kingdoms:whitewarden_keep",
+      "weight": 1
+    },
+    {
+      "structure": "grim_kingdoms:winterhold_citadel",
+      "weight": 1
+    },
+    {
+      "structure": "grim_kingdoms:zweiberg",
+      "weight": 1
+    },
+    {
+      "structure": "grim_kingdoms:travelers_lodge",
+      "weight": 1
+    },
+    {
+      "structure": "grim_kingdoms:chill_hallmanor",
+      "weight": 1
+    }
+  ],
+  "placement": {
+    "type": "minecraft:random_spread",
+    "salt": 88,
+    "locate_offset": [
+      0,
+      0,
+      0
+    ],
+    "spacing": 12,
+    "separation": 4
+  }
+}

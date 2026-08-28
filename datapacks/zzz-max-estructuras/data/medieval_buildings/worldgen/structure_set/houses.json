@@ -1,0 +1,30 @@
+{
+  "structures": [
+    {
+      "structure": "medieval_buildings:house_2",
+      "weight": 2
+    },
+    {
+      "structure": "medieval_buildings:house_1",
+      "weight": 3
+    },
+    {
+      "structure": "medieval_buildings:tower",
+      "weight": 2
+    },
+    {
+      "structure": "medieval_buildings:fort",
+      "weight": 2
+    }
+  ],
+  "placement": {
+    "salt": 651344,
+    "spacing": 26,
+    "separation": 9,
+    "type": "minecraft:random_spread",
+    "exclusion_zone": {
+      "other_set": "minecraft:villages",
+      "chunk_count": 10
+    }
+  }
+}

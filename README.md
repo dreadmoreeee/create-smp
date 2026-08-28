@@ -70,6 +70,7 @@ No hay que repartir ningún zip.
 | `install/sync.ps1` | la lógica real del sincronizador |
 | `install/generar-manifest.ps1` | regenera las listas tras cambiar mods |
 | `config/` | configuración de los mods del servidor |
+| `datapacks/` | datapacks propios (nivel base de LevelZ, densidad de estructuras) |
 | `server.properties.example` | ajustes del servidor, sin datos propios |
 | `start.bat` | arranque del servidor (16 GB, flags de Aikar) |
 
@@ -80,11 +81,12 @@ No hay que repartir ningún zip.
 El `.gitignore` ignora **todo** por defecto y solo permite las rutas de la tabla
 de arriba. Queda fuera a propósito:
 
-- `world/` — el mundo entero
+- `world/` — el mundo entero (los datapacks propios se versionan aparte, en `datapacks/`)
 - `logs/` — contienen las **IP de los jugadores** (`log-ips=true`)
 - `whitelist.json`, `ops.json`, `usercache.json`, `banned-*.json` — nombres y UUID
 - `config/skinrestorer/mojang_profile_cache.json` — nombres y UUID reales
 - `config/resourceful-config-web.json` — contraseña generada del panel web
+- `server.properties` — lleva la contraseña de RCON (se sube `.example` con el campo vacío)
 - `config/voicechat/voicechat-server.properties` — dirección del túnel de playit
   (se sube `.example` con el campo vacío)
 - `mods/`, `client-pack/`, `jdk-*/`, `libraries/` y cualquier `.jar` o `.zip`
