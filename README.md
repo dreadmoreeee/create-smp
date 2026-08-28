@@ -36,6 +36,18 @@ El script hace todo esto solo:
 
 Es seguro ejecutarlo las veces que quieras: si ya está todo bien, no toca nada.
 
+### Si da error
+
+Cada ejecución deja un registro completo en **`install\actualizar-log.txt`**,
+al lado del `.bat`. Lleva la versión de Windows, la de PowerShell, las carpetas
+que revisó y el error exacto con su número de línea.
+
+Si algo falla, manda ese archivo. Con eso se puede ver qué pasó sin tener que
+adivinar.
+
+Si ni siquiera aparece ese archivo, es que PowerShell no llegó a arrancar
+(antivirus o política de Windows). El `.bat` lo dice y deja la ventana abierta.
+
 ### Si no encuentra tu carpeta
 
 Busca en `%APPDATA%\.minecraft` y en la de TLauncher. Si usas otra ruta:

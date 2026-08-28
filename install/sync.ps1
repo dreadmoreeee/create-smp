@@ -11,6 +11,7 @@
 param(
     [string]$MinecraftDir = "",
     [string]$Manifest     = "",
+    [string]$LogPath      = "",
     [switch]$Offline,
     [switch]$NoPause,
     [switch]$Force
@@ -54,7 +55,37 @@ function Title ($m) {
     Write-Host "=======================================================" -ForegroundColor DarkGray
 }
 
+# ---------------------------------------------------------------- registro
+# Todo lo que sale por pantalla se guarda tambien en un archivo, para poder
+# mandarlo cuando algo falle en el ordenador de otro.
+if ([string]::IsNullOrWhiteSpace($LogPath)) {
+    $LogPath = Join-Path $PSScriptRoot 'actualizar-log.txt'
+    # si la carpeta no deja escribir (descargado a una ruta protegida, o
+    # abierto desde dentro del .zip), se usa la carpeta temporal
+    try {
+        $prueba = Join-Path $PSScriptRoot ('.w' + [guid]::NewGuid().ToString('N').Substring(0,6))
+        Set-Content $prueba -Value 'x' -EA Stop
+        Remove-Item $prueba -Force -EA SilentlyContinue
+    } catch {
+        $LogPath = Join-Path $env:TEMP 'create-smp-actualizar-log.txt'
+    }
+}
+
+$script:LogOn = $false
+try { Start-Transcript -Path $LogPath -Force -EA Stop | Out-Null; $script:LogOn = $true } catch { }
+
+function Cerrar-Log {
+    if ($script:LogOn) { try { Stop-Transcript | Out-Null } catch { } ; $script:LogOn = $false }
+}
+
 function Fin ($code) {
+    if ($code -ne 0) {
+        Write-Host ""
+        Write-Host "  Se guardo un registro completo en:" -ForegroundColor Yellow
+        Write-Host "     $LogPath" -ForegroundColor Yellow
+        Write-Host "  Mandaselo a quien lleva el servidor." -ForegroundColor Yellow
+    }
+    Cerrar-Log
     if (-not $NoPause) {
         Write-Host ""
         Write-Host "Pulsa una tecla para cerrar..." -ForegroundColor DarkGray
@@ -63,7 +94,31 @@ function Fin ($code) {
     exit $code
 }
 
+# Cualquier error que no este previsto acaba aqui en vez de cerrar la ventana
+# de golpe sin decir nada.
+trap {
+    Write-Host ""
+    Write-Host "  [ERROR] Fallo inesperado. Esto es lo que hay que mandar:" -ForegroundColor Red
+    Write-Host "     $($_.Exception.GetType().Name): $($_.Exception.Message)" -ForegroundColor Red
+    if ($_.InvocationInfo) {
+        Write-Host "     linea $($_.InvocationInfo.ScriptLineNumber): $($_.InvocationInfo.Line.Trim())" -ForegroundColor DarkGray
+    }
+    if ($_.ScriptStackTrace) { Write-Host "     $($_.ScriptStackTrace)" -ForegroundColor DarkGray }
+    Fin 1
+}
+
 Title "Create SMP  -  sincronizador de mods  (Minecraft $MC_VERSION Fabric)"
+
+# Datos del equipo: casi todos los fallos raros salen de aqui.
+$os = $null
+try { $os = Get-CimInstance Win32_OperatingSystem -EA Stop } catch { }
+Say "  fecha       : $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')"
+Say "  equipo      : $(if ($os) { "$($os.Caption) build $($os.BuildNumber)" } else { 'desconocido' })"
+Say "  PowerShell  : $($PSVersionTable.PSVersion)  ($(if ([Environment]::Is64BitProcess) { '64' } else { '32' }) bits)"
+Say "  politica    : $(try { Get-ExecutionPolicy } catch { 'n/d' })"
+Say "  APPDATA     : $env:APPDATA"
+Say "  script      : $PSScriptRoot"
+Say "  registro    : $LogPath"
 
 # ------------------------------------------------- 1. Localizar .minecraft
 # Un perfil de Fabric se reconoce por sus LIBRERIAS, no por el nombre de la
@@ -149,6 +204,8 @@ if ($null -eq $elegida) {
 }
 $MinecraftDir = $elegida
 Ok ".minecraft: $MinecraftDir"
+# el recorrido completo queda siempre en el registro
+foreach ($l in $informe) { Write-Host "          $l" -ForegroundColor DarkGray }
 
 $ModsDir = Join-Path $MinecraftDir 'mods'
 if (-not (Test-Path $ModsDir)) { [void](New-Item -ItemType Directory -Path $ModsDir) }

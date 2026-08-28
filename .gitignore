@@ -35,6 +35,10 @@ config/**/*.bak
 config/**/*.lock
 config/**/*.old
 
+# registro que genera ACTUALIZAR.bat en el equipo de cada jugador:
+# lleva rutas con su nombre de usuario, no tiene por que subirse
+install/actualizar-log.txt
+
 # --- 4) por si acaso, en cualquier sitio ---
 *.jar
 *.zip
