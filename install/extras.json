@@ -1,0 +1,22 @@
+﻿{
+  "_comentario": [
+    "Mods que NO existen en Modrinth y hay que bajar de otro sitio.",
+    "generar-manifest.ps1 los mezcla en modpack.json y server-mods.json como",
+    "cualquier otro mod: el hash y el tamano los calcula el propio generador",
+    "leyendo el .jar de la carpeta, asi que aqui no se escriben a mano.",
+    "sync.ps1 no necesita saber nada de esto: descarga de la url que venga en",
+    "el manifiesto y verifica el SHA-512 igual que con los de Modrinth.",
+    "",
+    "Para anadir uno: pon el .jar en mods/ y/o client-pack/mods/, anade su",
+    "entrada aqui con el nombre de archivo exacto, y ejecuta generar-manifest.ps1."
+  ],
+  "mods": [
+    {
+      "file": "SecurityCraft-fabric-V0.4-mc1.20.1.jar",
+      "source": "curseforge",
+      "page": "https://www.curseforge.com/minecraft/mc-mods/securitycraft-fabric/files/8628504",
+      "url": "https://mediafilez.forgecdn.net/files/8628/504/%5B1.20.1%5D%20SecurityCraft-fabric-V0.4.jar",
+      "nota": "El SecurityCraft de Modrinth es solo Forge/NeoForge. El port de Fabric vive unicamente en CurseForge."
+    }
+  ]
+}

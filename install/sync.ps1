@@ -218,8 +218,11 @@ if (Test-Path $bakDir) {
         foreach ($p in $Protegidos) {
             if ($f.Name -like $p) {
                 $destino = Join-Path $ModsDir $f.Name
-                if (-not (Test-Path $destino)) {
-                    Move-Item $f.FullName $destino -Force
+                # -LiteralPath obligatorio: hay mods cuyo nombre lleva corchetes
+                # (p.ej. "[1.20.1] Algo.jar") y PowerShell los toma por comodines,
+                # con lo que Test-Path dice que no existe un archivo que si esta.
+                if (-not (Test-Path -LiteralPath $destino)) {
+                    Move-Item -LiteralPath $f.FullName -Destination $destino -Force
                     Info "devuelto a mods: $($f.Name)"
                 }
                 break
@@ -366,7 +369,7 @@ if ($sobran.Count -gt 0) {
     $bak = Join-Path $MinecraftDir $BackupDirName
     if (-not (Test-Path $bak)) { [void](New-Item -ItemType Directory -Path $bak) }
     foreach ($f in $sobran) {
-        Move-Item $f.FullName (Join-Path $bak $f.Name) -Force
+        Move-Item -LiteralPath $f.FullName -Destination (Join-Path $bak $f.Name) -Force
         Say "     - $($f.Name)"
     }
     Ok "movidos a: $bak   (si algo se rompe, estan ahi)"
@@ -392,7 +395,7 @@ if ($faltan.Count -eq 0) {
         try {
             Invoke-WebRequest -Uri $m.url -OutFile $tmp -UseBasicParsing -TimeoutSec 300
             if ((Get-Sha512 $tmp) -ne $m.sha512) { throw "el hash no coincide (descarga corrupta)" }
-            Move-Item $tmp (Join-Path $ModsDir $m.file) -Force
+            Move-Item -LiteralPath $tmp -Destination (Join-Path $ModsDir $m.file) -Force
             Write-Host "  [OK]    $etq" -ForegroundColor Green
         } catch {
             $fallos++

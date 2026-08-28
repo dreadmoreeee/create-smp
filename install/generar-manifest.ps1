@@ -17,6 +17,18 @@ $ClientMods = Join-Path $Raiz 'client-pack\mods'
 $ServerMods = Join-Path $Raiz 'mods'
 $Salida     = Join-Path $Raiz 'modpack'
 
+# Mods declarados a mano porque no estan en Modrinth (ver extras.json).
+$Extras = @()
+$rutaExtras = Join-Path $PSScriptRoot 'extras.json'
+if (Test-Path $rutaExtras) {
+    try {
+        $Extras = @((Get-Content $rutaExtras -Raw | ConvertFrom-Json).mods)
+        Write-Host "extras.json: $($Extras.Count) mod(s) fuera de Modrinth" -ForegroundColor Cyan
+    } catch {
+        Write-Host "extras.json no se pudo leer: $($_.Exception.Message)" -ForegroundColor Red
+    }
+}
+
 function Get-Sha512 ($ruta) {
     $sha = [System.Security.Cryptography.SHA512]::Create()
     $fs  = [System.IO.File]::OpenRead($ruta)
@@ -83,13 +95,31 @@ function Build-Manifest ($carpeta, $nombre, $descripcion) {
 
     $mods = New-Object System.Collections.ArrayList
     $sinResolver = New-Object System.Collections.ArrayList
+    $deExtras    = New-Object System.Collections.ArrayList
 
     foreach ($h in ($porHash.Keys | Sort-Object { $porHash[$_] })) {
+        $nombreJar = $porHash[$h]
         $v = $encontrados[$h]
-        if ($null -eq $v) { [void]$sinResolver.Add($porHash[$h]); continue }
+
+        if ($null -eq $v) {
+            # No esta en Modrinth. Puede que sea uno de los declarados a mano.
+            $ex = @($Extras | Where-Object { $_.file -eq $nombreJar })[0]
+            if ($null -eq $ex) { [void]$sinResolver.Add($nombreJar); continue }
+            [void]$mods.Add([ordered]@{
+                file    = $nombreJar
+                source  = $ex.source
+                page    = $ex.page
+                sha512  = $h
+                size    = (Get-Item (Join-Path $carpeta $nombreJar)).Length
+                url     = $ex.url
+            })
+            [void]$deExtras.Add($nombreJar)
+            continue
+        }
+
         $archivo = @($v.files | Where-Object { $_.hashes.sha512 -eq $h })[0]
         [void]$mods.Add([ordered]@{
-            file       = $porHash[$h]
+            file       = $nombreJar
             project_id = $v.project_id
             version_id = $v.id
             version    = $v.version_number
@@ -99,10 +129,16 @@ function Build-Manifest ($carpeta, $nombre, $descripcion) {
         })
     }
 
+    if ($deExtras.Count -gt 0) {
+        Write-Host "   fuera de Modrinth, tomados de extras.json:" -ForegroundColor Cyan
+        foreach ($s in $deExtras) { Write-Host "      + $s" -ForegroundColor Cyan }
+    }
+
     if ($sinResolver.Count -gt 0) {
-        Write-Host "   AVISO: estos .jar no estan en Modrinth y NO se podran" -ForegroundColor Yellow
-        Write-Host "   descargar automaticamente:" -ForegroundColor Yellow
+        Write-Host "   AVISO: estos .jar no estan en Modrinth NI en extras.json," -ForegroundColor Yellow
+        Write-Host "   asi que nadie los podra descargar:" -ForegroundColor Yellow
         foreach ($s in $sinResolver) { Write-Host "      - $s" -ForegroundColor Yellow }
+        Write-Host "   Anadelos a install\extras.json con su url de descarga directa." -ForegroundColor Yellow
     }
 
     $loaderMin = Get-LoaderMinimo $carpeta
